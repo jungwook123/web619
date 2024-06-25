@@ -1,0 +1,113 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(45deg, #DA291C, #000000);
+    color: white;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+header {
+    background-color: #000000;
+    padding: 20px;
+    animation: headerFadeIn 2s ease-in-out;
+}
+
+@keyframes headerFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#logo {
+    width: 100px;
+    transition: transform 0.3s ease-in-out;
+}
+
+#logo:hover {
+    transform: rotate(360deg);
+}
+
+.hero {
+    background-image: url('https://www.manutd.com/AssetPicker/images/0/0/10/186/711909/MUFC-Article-Image_8e23681f-f634-48ad-89e3-f7d392bf524f1591994251693_large.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px;
+    color: white;
+    animation: heroSlideIn 3s ease-in-out;
+}
+
+@keyframes heroSlideIn {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+.hero h1 {
+    font-size: 3em;
+    margin: 0;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.hero p {
+    font-size: 1.5em;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.container {
+    animation: containerFadeIn 2s ease-in-out;
+}
+
+@keyframes containerFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.content {
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out;
+}
+
+.content:hover {
+    transform: scale(1.05);
+}
+
+.players {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.players img {
+    width: 150px;
+    height: 200px;
+    margin: 10px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out;
+}
+
+.players img:hover {
+    transform: rotate(-10deg) scale(1.1);
+}
+
+footer {
+    background-color: #000000;
+    padding: 10px;
+}
+
+a {
+    color: #FFD700;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
