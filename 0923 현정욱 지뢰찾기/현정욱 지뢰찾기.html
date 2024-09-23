@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            text-align: center;
+        }
+
+        #board {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #board tr td {
+            border: 1px solid white;
+            background: #34da79;
+            width: 32px;
+            height: 32px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        #board tr td.clicked {
+            background: #6c5ee7;
+        }
+
+        #board tr td.mine {
+            background: #FF0000;
+        }
+
+        #board tr td.flag {
+            background: #ffa500;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>지뢰찾기</h1>
+    <p>남은 지뢰 수: <span id="mineCount"></span></p>
+    <p>경과 시간: <span id="timer">0</span> 초</p>
+    <table id="board"></table>
+    <button onclick="genGrid();">새로운 게임</button>
+    <button onclick="resetGame();">게임 초기화</button>
+
+    <script>
+        let grid = document.getElementById("board");
+        let mineCountDisplay = document.getElementById("mineCount");
+        let timerDisplay = document.getElementById("timer");
+        let mineCount = 0;
+        let totalMines = 0;
+        let gameStarted = false;
+        let timer;
+        let gridData = [];
+
+        function genGrid() {
+            grid.innerHTML = "";
+            gridData = [];
+            mineCount = 0;
+            totalMines = 0;
+            gameStarted = false;
+            clearInterval(timer);
+            timerDisplay.innerHTML = 0;
+
+            for (let i = 0; i < 8; i++) {
+                let row = grid.insertRow(i);
+                gridData[i] = [];
+                for (let j = 0; j < 8; j++) {
+                    let cell = row.insertCell(j);
+                    cell.onclick = function () { clickBox(i, j); };
+                    cell.oncontextmenu = function (e) { flagBox(e, i, j); return false; };
+                    let mine = Math.random() < 0.2; // 20% 확률로 지뢰 생성
+
+                    gridData[i][j] = {
+                        mine: mine,
+                        clicked: false,
+                        flagged: false,
+                        adjacentMines: 0
+                    };
+
+                    if (mine) totalMines++;
+                }
+            }
+
+            // 주변 지뢰 개수 계산
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (!gridData[i][j].mine) {
+                        gridData[i][j].adjacentMines = countAdjacentMines(i, j);
+                    }
+                }
+            }
+
+            mineCountDisplay.innerHTML = totalMines;
+        }
+
+        function countAdjacentMines(row, col) {
+            let mines = 0;
+            for (let i = row - 1; i <= row + 1; i++) {
+                for (let j = col - 1; j <= col + 1; j++) {
+                    if (i >= 0 && i < 8 && j >= 0 && j < 8 && gridData[i][j].mine) {
+                        mines++;
+                    }
+                }
+            }
+            return mines;
+        }
+
+        function clickBox(row, col) {
+            if (!gameStarted) {
+                startTimer();
+                gameStarted = true;
+            }
+
+            let cell = grid.rows[row].cells[col];
+            let cellData = gridData[row][col];
+
+            if (cellData.flagged || cellData.clicked) return; // 이미 클릭된 칸이나 깃발 칸은 무시
+
+            cellData.clicked = true;
+
+            if (cellData.mine) {
+                cell.className = "mine";
+                alert("게임이 종료되었습니다.");
+                clearInterval(timer);
+            } else {
+                cell.className = "clicked";
+                let mines = cellData.adjacentMines;
+
+                if (mines > 0) {
+                    cell.innerHTML = mines; // 주변 지뢰 개수 표시
+                } else {
+                    revealAdjacentCells(row, col); // 인접 지뢰가 없으면 주변 칸을 자동으로 열기
+                }
+
+                checkWinCondition();
+            }
+        }
+
+        function revealAdjacentCells(row, col) {
+            for (let i = row - 1; i <= row + 1; i++) {
+                for (let j = col - 1; j <= col + 1; j++) {
+                    if (i >= 0 && i < 8 && j >= 0 && j < 8 && !gridData[i][j].clicked && !gridData[i][j].mine) {
+                        clickBox(i, j); // 주변 칸도 자동으로 클릭
+                    }
+                }
+            }
+        }
+
+        function flagBox(e, row, col) {
+            e.preventDefault();
+            let cell = grid.rows[row].cells[col];
+            let cellData = gridData[row][col];
+
+            if (cellData.clicked) return; // 이미 클릭된 칸은 깃발 표시 불가
+
+            if (cellData.flagged) {
+                cell.className = "";
+                cellData.flagged = false;
+                mineCount++;
+            } else {
+                cell.className = "flag";
+                cellData.flagged = true;
+                mineCount--;
+            }
+
+            mineCountDisplay.innerHTML = mineCount;
+        }
+
+        function checkWinCondition() {
+            let clickedCells = 0;
+
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (gridData[i][j].clicked) clickedCells++;
+                }
+            }
+
+            if (clickedCells + totalMines === 8 * 8) {
+                alert("축하합니다! 승리했습니다.");
+                clearInterval(timer);
+            }
+        }
+
+        function resetGame() {
+            genGrid();
+        }
+
+        function startTimer() {
+            let time = 0;
+            timer = setInterval(function () {
+                time++;
+                timerDisplay.innerHTML = time;
+            }, 1000);
+        }
+
+        // 초기 게임 설정
+        genGrid();
+    </script>
+</body>
+
+</html>
